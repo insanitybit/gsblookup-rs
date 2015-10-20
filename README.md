@@ -9,7 +9,6 @@ Unstable - API will certainly be changing. Network errors fail silently.
   let key : String = "API KEY HERE".into();
   let url = Url::parse("http://exampleurl.org/").unwrap();
 
-
   let gsb = GSBClient::new(key);
   let statuses = gsb.lookup(url);
 

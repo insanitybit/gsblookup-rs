@@ -2,6 +2,13 @@
 name = "gsbrs"
 version = "0.0.1"
 authors = ["insanitybit <insanitybit@gmail.com>"]
+description = "Provides a client for Google Safe Browsing lookups"
+license = "MIT"
+keywords = ["Google", "SafeBrowsing", "gsb"]
+# documentation = "..."
+# homepage = "..."
+repository = "https://github.com/insanitybit/gsblookup-rs"
+readme = "README.md"
 
 [dependencies]
 hyper = "0.6"
@@ -20,13 +27,3 @@ debug = false
 rpath = false
 lto = true
 debug-assertions = false
-
-# documentation = "..."
-# homepage = "..."
-repository = "https://github.com/insanitybit/gsblookup-rs"
-
-description = "Provides a client for Google Safe Browsing lookups"
-readme = "https://github.com/insanitybit/gsblookup-rs/blob/master/README.md"
-
-keywords = ["Google", "SafeBrowsing", "gsb"]
-license = "MIT"
