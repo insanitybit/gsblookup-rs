@@ -1,0 +1,10 @@
+[package]
+name = "gsbrs"
+version = "0.0.1"
+authors = ["insanitybit <insanitybit@gmail.com>"]
+
+[dependencies.url]
+git = "https://github.com/servo/rust-url"
+
+[dependencies]
+hyper = "0.6"
