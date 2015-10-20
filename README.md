@@ -7,16 +7,15 @@ Unstable - API will certainly be changing. Network errors fail silently.
 
 ```rust
   let key : String = "API KEY HERE".into();
-
-  let gsb = GSBClient::new(key);
-
   let url = Url::parse("http://exampleurl.org/").unwrap();
 
+
+  let gsb = GSBClient::new(key);
   let statuses = gsb.lookup(url);
 
-  if status.is_empty() {
+  if statuses.is_empty() {
     println!("Url not found in any of Google's lists");
-  }
+  } else
 
   for status in statuses {
       match status {
