@@ -15,14 +15,14 @@ Unstable - API will certainly be changing. Network errors fail silently.
 
   if statuses.is_empty() {
     println!("Url not found in any of Google's lists");
-  } else
-
-  for status in statuses {
-      match status {
-          Status::Phishing    => println!("Phishing"),
-          Status::Malware     => println!("Malware"),
-          Status::Unwanted    => println!("Unwanted")
-      }
+  } else {
+    for status in statuses {
+        match status {
+            Status::Phishing    => println!("Phishing"),
+            Status::Malware     => println!("Malware"),
+            Status::Unwanted    => println!("Unwanted")
+        }
+    }
   }
 ```
 
