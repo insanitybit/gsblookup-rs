@@ -72,13 +72,14 @@ impl GSBClient {
         let mut base = Url::parse("https://sb-ssl.google.com/safebrowsing/api/lookup?").unwrap();
         let url = format!("{}", url);
 
-        let v = vec![("client", &self.name),
-                    ("key", &self.api_key),
-                    ("appver", &self.app_ver),
-                    ("pver", &self.api_ver),
-                    ("url", &url)];
+        let v : Vec<(&str, &str)> =
+                vec![("client", self.name.as_ref()),
+                    ("key", self.api_key.as_ref()),
+                    ("appver", self.app_ver.as_ref()),
+                    ("pver", self.api_ver.as_ref()),
+                    ("url", url.as_ref())];
 
-        base.set_query_from_pairs(&v);
+        base.set_query_from_pairs(v.into_iter());
 
         format!("{}",base)
     }
