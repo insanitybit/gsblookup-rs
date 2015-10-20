@@ -104,6 +104,7 @@ impl GSBClient {
             if size > 200 {
                 panic!("Can not lookup more than 200 urls");
             }
+            all_statuses.reserve(size);
             let size = size.to_string();
             let mut message = String::with_capacity(furls.len() + size.len());
 
@@ -120,36 +121,51 @@ impl GSBClient {
 
             match res {
                 Ok(mut res) => {
-                    let msg = {
-                        let mut s = String::new();
-                        let _ = res.read_to_string(&mut s);
-                        s
-                    };
-
-                    let msg : Vec<&str> = msg.split("\n").collect();
-
-                    for status_line in msg {
-                        let mut statuses = Vec::new();
-                        let status_line : Vec<&str> = status_line.split(",").collect();
-
-                        for status in status_line {
-                            match status {
-                                "ok"        => statuses.push(Status::Ok),
-                                "phishing"  => statuses.push(Status::Phishing),
-                                "malware"   => statuses.push(Status::Malware),
-                                "unwanted"  => statuses.push(Status::Unwanted),
-                                ""  => (),
-                                _   => unreachable!()
-                            }
-                        }
-                        all_statuses.push(statuses);
-                    }
+                    all_statuses = self.messages_from_response_post(&mut res);
                 },
                 Err(e)  => println!("Request failed with: {}", e)
             };
 
 
         all_statuses
+    }
+
+    fn messages_from_response_post(&self, res: &mut hyper::client::response::Response) -> Vec<Vec<Status>> {
+
+        let msgs = {
+            let mut s = String::new();
+            let _ = res.read_to_string(&mut s);
+            s
+        };
+
+        let msgs : Vec<&str> = msgs.split("\n").collect();
+        let mut all_statuses = Vec::with_capacity(msgs.len());
+
+        for status_line in msgs {
+            let status_line : Vec<&str> = status_line.split(",").collect();
+            let mut statuses = Vec::with_capacity(status_line.len());
+
+            statuses.extend(self.statuses_from_vec(&status_line));
+            all_statuses.push(statuses);
+        }
+
+        all_statuses
+    }
+
+    fn statuses_from_vec(&self, strstatuses: &[&str]) -> Vec<Status> {
+        let mut statuses = Vec::new();
+        for status in strstatuses {
+            let status = *status;
+            match status {
+                "phishing"  => statuses.push(Status::Phishing),
+                "malware"   => statuses.push(Status::Malware),
+                "unwanted"  => statuses.push(Status::Unwanted),
+                "ok"        => statuses.push(Status::Ok),
+                ""  => (),
+                _   => unreachable!()
+            }
+        }
+        statuses
     }
 
     fn build_post_url(&self) -> String {
