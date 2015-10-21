@@ -5,7 +5,6 @@ extern crate hyper;
 
 pub mod gsberror;
 
-
 use gsberror::GSBError;
 use hyper::Client;
 use url::Url;
@@ -27,7 +26,7 @@ pub struct GSBClient {
     api_key: String,
     client_name: String,
     app_ver: String,
-    pver: String
+    pver: String,
 }
 
 impl GSBClient {
@@ -37,7 +36,7 @@ impl GSBClient {
             api_key: key,
             client_name: "gsbrs".to_string(),
             app_ver: "0.0.1".to_string(),
-            pver: "3.1".to_string()
+            pver: "3.1".to_string(),
         }
     }
 
@@ -50,7 +49,6 @@ impl GSBClient {
     /// Queries GSB API with 'url', returns Vec of Status for 'url'
     pub fn lookup(&self, url: &Url) -> Result<Vec<Status>, GSBError> {
         let query = self.build_get_url(url.clone());
-        let mut statuses : Vec<Status> = Vec::new();
 
         let client = Client::new();
         let mut res = try!(client.get(&query).send());
@@ -61,18 +59,9 @@ impl GSBClient {
             s
         };
 
-        let msg : Vec<&str> = msg.split(",").collect();
+        let msg: Vec<&str> = msg.split(",").collect();
 
-        for status in msg {
-            match status {
-                "phishing"  => statuses.push(Status::Phishing),
-                "malware"   => statuses.push(Status::Malware),
-                "unwanted"  => statuses.push(Status::Unwanted),
-                ""          => (),
-                // Given a well formed response from GSB this should never happen
-                _   => panic!()
-            };
-        }
+        let statuses = self.statuses_from_vec(&msg);
         Ok(statuses)
     }
 
@@ -81,45 +70,43 @@ impl GSBClient {
         let mut base = Url::parse("https://sb-ssl.google.com/safebrowsing/api/lookup?").unwrap();
         let url = format!("{}", url);
 
-        let v : Vec<(&str, &str)> =
-                vec![("client", self.client_name.as_ref()),
-                    ("key", self.api_key.as_ref()),
-                    ("appver", self.app_ver.as_ref()),
-                    ("pver", self.pver.as_ref()),
-                    ("url", url.as_ref())];
+        let v: Vec<(&str, &str)> = vec![("client", self.client_name.as_ref()),
+                                        ("key", self.api_key.as_ref()),
+                                        ("appver", self.app_ver.as_ref()),
+                                        ("pver", self.pver.as_ref()),
+                                        ("url", url.as_ref())];
 
         base.set_query_from_pairs(v.into_iter());
 
-        format!("{}",base)
+        format!("{}", base)
     }
 
     /// Perform a bulk lookup on an iterable of urls.
     /// Returns a Vector of Vectors containing Statuses.
-    /// # Panics
-    /// Panics if more than 500 urls are passed in.
-    pub fn lookup_all<'a, I> (&self, urls: I) -> Result<Vec<Vec<Status>>, GSBError>
-    where I: Iterator<Item=&'a str>
+    /// Returns GSBError::TooManyUrls if > 500 urls are pased in
+    pub fn lookup_all<'a, I>(&self, urls: I) -> Result<Vec<Vec<Status>>, GSBError>
+        where I: Iterator<Item = &'a str>
     {
         let url = self.build_post_url();
 
-        let mut all_statuses = Vec::new();
-
         let message = {
-            let mut furls = String::new();
-            let mut size : usize = 0;
 
-            for url in urls {
-                size = size + 1;
-                furls.push_str(url);
-                furls.push('\n');
-            }
+            let (furls, size) = {
+                let mut furls = String::new();
+                let mut size: usize = 0;
 
+                for url in urls {
+                    size = size + 1;
+                    furls.push_str(url);
+                    furls.push('\n');
+                }
+                (furls, size)
+            };
             // GSB API only accepts 500 or fewer urls
             if size > 500 {
-                panic!("Can not lookup more than 500 urls");
+                return Err(GSBError::TooManyUrls);
             }
 
-            all_statuses.reserve(size);
             let size = size.to_string();
             let mut message = String::with_capacity(furls.len() + size.len());
 
@@ -132,29 +119,28 @@ impl GSBClient {
 
         let client = Client::new();
         let client = client.post(&url).body(&message);
-        let mut res = try!(client.send());
+        let res = try!(client.send());
 
-        all_statuses = self.messages_from_response_post(&mut res);
-
-        Ok(all_statuses)
+        Ok(self.messages_from_response_post(res))
     }
 
     /// Takes a reponse from GSB and splits it into lines of Statuses
-    fn messages_from_response_post(&self, res: &mut hyper::client::response::Response) -> Vec<Vec<Status>> {
+    fn messages_from_response_post(&self,
+                                   res: hyper::client::response::Response)
+                                   -> Vec<Vec<Status>> {
         let msgs = {
+            let mut res = res;
             let mut s = String::new();
             let _ = res.read_to_string(&mut s);
             s
         };
 
-        let msgs : Vec<&str> = msgs.split("\n").collect();
+        let msgs: Vec<&str> = msgs.split("\n").collect();
         let mut all_statuses = Vec::with_capacity(msgs.len());
 
         for status_line in msgs {
-            let status_line : Vec<&str> = status_line.split(",").collect();
-            let mut statuses = Vec::with_capacity(status_line.len());
-
-            statuses.extend(self.statuses_from_vec(&status_line));
+            let status_line: Vec<&str> = status_line.split(",").collect();
+            let statuses = self.statuses_from_vec(&status_line);
             if !statuses.is_empty() {
                 all_statuses.push(statuses);
             }
@@ -169,12 +155,12 @@ impl GSBClient {
         for status in strstatuses {
             let status = *status;
             match status {
-                "phishing"  => statuses.push(Status::Phishing),
-                "malware"   => statuses.push(Status::Malware),
-                "unwanted"  => statuses.push(Status::Unwanted),
-                "ok"        => statuses.push(Status::Ok),
-                ""  => (),
-                _   => unreachable!()
+                "phishing" => statuses.push(Status::Phishing),
+                "malware" => statuses.push(Status::Malware),
+                "unwanted" => statuses.push(Status::Unwanted),
+                "ok" => statuses.push(Status::Ok),
+                "" => (),
+                _ => panic!(),
             }
         }
         statuses
@@ -184,19 +170,18 @@ impl GSBClient {
     fn build_post_url(&self) -> String {
         let mut base = Url::parse("https://sb-ssl.google.com/safebrowsing/api/lookup?").unwrap();
 
-        let v : Vec<(&str, &str)> =
-                vec![("client", self.client_name.as_ref()),
-                    ("key", self.api_key.as_ref()),
-                    ("appver", self.app_ver.as_ref()),
-                    ("pver", self.pver.as_ref())];
+        let v: Vec<(&str, &str)> = vec![("client", self.client_name.as_ref()),
+                                        ("key", self.api_key.as_ref()),
+                                        ("appver", self.app_ver.as_ref()),
+                                        ("pver", self.pver.as_ref())];
 
         base.set_query_from_pairs(v.into_iter());
 
-        format!("{}",base)
+        format!("{}", base)
     }
 
-    // pub fn canonicalize(url: Url) -> Url {
-    //     unimplemented!()
-    // }
+// pub fn canonicalize(url: Url) -> Url {
+//     unimplemented!()
+// }
 
 }
