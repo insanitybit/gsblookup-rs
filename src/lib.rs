@@ -2,6 +2,10 @@
 extern crate url;
 extern crate hyper;
 
+pub mod gsberror;
+
+
+use gsberror::GSBError;
 use hyper::Client;
 use url::Url;
 use std::io::prelude::*;
@@ -37,37 +41,32 @@ impl GSBClient {
     /// Takes a Url and queries the Google Safebrowsing Lookup API
     /// Returns a Vec of Status enums corresponding to the lists in which
     /// the Url is found. If the Url is not found in any list, the Vec is empty.
-    pub fn lookup(&self, url: &Url) -> Vec<Status> {
+    pub fn lookup(&self, url: &Url) -> Result<Vec<Status>, GSBError> {
         let query = self.build_get_url(url.clone());
         let mut statuses : Vec<Status> = Vec::new();
         println!("{}", query);
 
         let client = Client::new();
-        let res = client.get(&query).send();
+        let mut res = try!(client.get(&query).send());
 
-        match res {
-            Ok(mut res) => {
-                let msg = {
-                    let mut s = String::new();
-                    let _ = res.read_to_string(&mut s);
-                    s
-                };
-
-                let msg : Vec<&str> = msg.split(",").collect();
-
-                for status in msg {
-                    match status {
-                        "phishing"  => statuses.push(Status::Phishing),
-                        "malware"   => statuses.push(Status::Malware),
-                        "unwanted"  => statuses.push(Status::Unwanted),
-                        ""          => (),
-                        _   => unreachable!()
-                    }
-                }
-            },
-            Err(e)  => println!("Request to {} failed with: {}", query, e)
+        let msg = {
+            let mut s = String::new();
+            let _ = res.read_to_string(&mut s);
+            s
         };
-        statuses
+
+        let msg : Vec<&str> = msg.split(",").collect();
+
+        for status in msg {
+            match status {
+                "phishing"  => statuses.push(Status::Phishing),
+                "malware"   => statuses.push(Status::Malware),
+                "unwanted"  => statuses.push(Status::Unwanted),
+                ""          => (),
+                _   => unreachable!()
+            };
+        }
+        Ok(statuses)
     }
 
     fn build_get_url(&self, url: Url) -> String {

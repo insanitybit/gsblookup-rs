@@ -11,15 +11,24 @@ fn main() {
 
     let url = Url::parse("http://exampleurl.org/").unwrap();
 
-    let statuses = gsb.lookup(&url);
-    for status in statuses {
-        match status {
-            Status::Phishing    => println!("Phishing"),
-            Status::Malware     => println!("Malware"),
-            Status::Unwanted    => println!("Unwanted"),
-            _                   => ()
-        }
+    let response = gsb.lookup(&url);
+
+    match response {
+        Ok(statuses) =>
+        {
+            for status in statuses {
+                match status {
+                    Status::Phishing    => println!("Phishing"),
+                    Status::Malware     => println!("Malware"),
+                    Status::Unwanted    => println!("Unwanted"),
+                    Status::Ok          => println!("Ok")
+                }
+            }
+        },
+        Err(e) => println!("{}", e)
     }
+
+
 
     let urls = vec!["https://google.com/", "http://exampleurl.org/"];
 
