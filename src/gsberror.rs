@@ -3,8 +3,7 @@ extern crate hyper;
 use std::error;
 use std::fmt;
 use hyper::Error;
-// We derive `Debug` because all types should probably derive `Debug`.
-// This gives us a reasonable human readable description of `GSBError` values.
+
 #[derive(Debug)]
 pub enum GSBError {
     Network(hyper::error::Error),
