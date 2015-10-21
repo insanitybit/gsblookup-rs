@@ -10,6 +10,9 @@ use hyper::Client;
 use url::Url;
 use std::io::prelude::*;
 
+/// Status represents each list a URL may be found in as well as a value,
+/// 'Ok', which is used as a placeholder when the URL is not found in any
+/// list. 'Ok' is only used in bulk queries.
 pub enum Status {
     Ok,
     Phishing,
@@ -17,30 +20,32 @@ pub enum Status {
     Unwanted,
 }
 
+/// A client for interacting with the Google Safe Browsing Lookup API
 pub struct GSBClient {
     api_key: String,
-    name: String,
+    client_name: String,
     app_ver: String,
     api_ver: String
 }
 
 impl GSBClient {
+    /// Creates a new GSBClient that will use 'key' as the GSB API key
     pub fn new(key: String) -> GSBClient {
         GSBClient {
             api_key: key,
-            name: "gsbrs".to_string(),
+            client_name: "gsbrs".to_string(),
             app_ver: "0.0.1".to_string(),
             api_ver: "3.1".to_string()
         }
     }
 
-    pub fn change_name(&mut self, name: String) {
-        self.name = name;
+    /// Sets the GSBClient client_name to 'client_name'
+    /// GSBClient uses 'gsbrs' as the client_name by default.
+    pub fn change_client_name(&mut self, client_name: String) {
+        self.client_name = client_name;
     }
 
-    /// Takes a Url and queries the Google Safebrowsing Lookup API
-    /// Returns a Vec of Status enums corresponding to the lists in which
-    /// the Url is found. If the Url is not found in any list, the Vec is empty.
+    /// Queries GSB API with 'url', returns Vec of Status for 'url'
     pub fn lookup(&self, url: &Url) -> Result<Vec<Status>, GSBError> {
         let query = self.build_get_url(url.clone());
         let mut statuses : Vec<Status> = Vec::new();
@@ -69,12 +74,13 @@ impl GSBClient {
         Ok(statuses)
     }
 
+    /// Build a queryable String with 'url'
     fn build_get_url(&self, url: Url) -> String {
         let mut base = Url::parse("https://sb-ssl.google.com/safebrowsing/api/lookup?").unwrap();
         let url = format!("{}", url);
 
         let v : Vec<(&str, &str)> =
-                vec![("client", self.name.as_ref()),
+                vec![("client", self.client_name.as_ref()),
                     ("key", self.api_key.as_ref()),
                     ("appver", self.app_ver.as_ref()),
                     ("pver", self.api_ver.as_ref()),
@@ -85,6 +91,10 @@ impl GSBClient {
         format!("{}",base)
     }
 
+    /// Perform a bulk lookup on an iterable of urls.
+    /// Returns a Vector of Vectors containing Statuses.
+    /// # Panics
+    /// Panics if more than 200 urls are passed in.
     pub fn lookup_all<'a, I> (&self, urls: I) -> Vec<Vec<Status>>
     where I: Iterator<Item=&'a str>
     {
@@ -118,19 +128,18 @@ impl GSBClient {
             .body(&message)
             .send();
 
-            match res {
-                Ok(mut res) => {
-                    all_statuses = self.messages_from_response_post(&mut res);
-                },
-                Err(e)  => println!("Request failed with: {}", e)
-            };
-
+        match res {
+            Ok(mut res) => {
+                all_statuses = self.messages_from_response_post(&mut res);
+            },
+            Err(e)  => println!("Request failed with: {}", e)
+        };
 
         all_statuses
     }
 
+    /// Takes a reponse from GSB and splits it into lines of Statuses
     fn messages_from_response_post(&self, res: &mut hyper::client::response::Response) -> Vec<Vec<Status>> {
-
         let msgs = {
             let mut s = String::new();
             let _ = res.read_to_string(&mut s);
@@ -151,6 +160,7 @@ impl GSBClient {
         all_statuses
     }
 
+    /// Builds a Vec<Status> from a slice of &str
     fn statuses_from_vec(&self, strstatuses: &[&str]) -> Vec<Status> {
         let mut statuses = Vec::new();
         for status in strstatuses {
@@ -167,11 +177,12 @@ impl GSBClient {
         statuses
     }
 
+    /// Builds a queryable string for POST requests
     fn build_post_url(&self) -> String {
         let mut base = Url::parse("https://sb-ssl.google.com/safebrowsing/api/lookup?").unwrap();
 
         let v : Vec<(&str, &str)> =
-                vec![("client", self.name.as_ref()),
+                vec![("client", self.client_name.as_ref()),
                     ("key", self.api_key.as_ref()),
                     ("appver", self.app_ver.as_ref()),
                     ("pver", self.api_ver.as_ref())];
