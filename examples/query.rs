@@ -5,32 +5,44 @@ use url::Url;
 use gsbrs::{GSBClient, Status};
 
 fn main() {
-    let key : String = "API KEY HERE".into();
+    let key : String = "AIzaSyCOZpLyGR3gMKqrb5Amwe9lGSsVKtr7V0w".into();
 
     let gsb = GSBClient::new(key);
 
     let url = Url::parse("http://exampleurl.org/").unwrap();
 
-    let response = gsb.lookup(&url);
+    let statuses = gsb.lookup(&url).unwrap();
 
-    match response {
-        Ok(statuses) =>
-        {
-            for status in statuses {
-                match status {
-                    Status::Phishing    => println!("Phishing"),
-                    Status::Malware     => println!("Malware"),
-                    Status::Unwanted    => println!("Unwanted"),
-                    Status::Ok          => println!("Ok")
-                }
+    if statuses.is_empty() {
+        println!("Ok");
+    } else {
+        for status in statuses {
+            match status {
+                Status::Phishing    => println!("Phishing"),
+                Status::Malware     => println!("Malware"),
+                Status::Unwanted    => println!("Unwanted"),
+                // lookup only ever returns the above 3 statuses
+                _                   => unreachable!()
             }
-        },
-        Err(e) => println!("{}", e)
+        }
     }
-
-
-
+    
     let urls = vec!["https://google.com/", "http://exampleurl.org/"];
 
-    let _ = gsb.lookup_all(urls.into_iter());
+    let status_lines = gsb.lookup_all(urls.into_iter()).unwrap();
+
+    if status_lines.is_empty() {
+        println!("No matches for any url");
+    }
+
+    for statuses in status_lines {
+        for status in statuses {
+            match status {
+                Status::Phishing    => println!("Phishing"),
+                Status::Malware     => println!("Malware"),
+                Status::Unwanted    => println!("Unwanted"),
+                Status::Ok          => println!("Ok")
+            }
+        }
+    }
 }

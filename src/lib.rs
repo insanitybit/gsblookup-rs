@@ -1,4 +1,5 @@
-#![allow(dead_code)]
+#![feature(custom_derive)]
+#![allow(dead_code, unused_attributes)]
 extern crate url;
 extern crate hyper;
 
@@ -13,6 +14,7 @@ use std::io::prelude::*;
 /// Status represents each list a URL may be found in as well as a value,
 /// 'Ok', which is used as a placeholder when the URL is not found in any
 /// list. 'Ok' is only used in bulk queries.
+#[derive(Display, Debug)]
 pub enum Status {
     Ok,
     Phishing,
@@ -25,7 +27,7 @@ pub struct GSBClient {
     api_key: String,
     client_name: String,
     app_ver: String,
-    api_ver: String
+    pver: String
 }
 
 impl GSBClient {
@@ -35,7 +37,7 @@ impl GSBClient {
             api_key: key,
             client_name: "gsbrs".to_string(),
             app_ver: "0.0.1".to_string(),
-            api_ver: "3.1".to_string()
+            pver: "3.1".to_string()
         }
     }
 
@@ -49,7 +51,6 @@ impl GSBClient {
     pub fn lookup(&self, url: &Url) -> Result<Vec<Status>, GSBError> {
         let query = self.build_get_url(url.clone());
         let mut statuses : Vec<Status> = Vec::new();
-        println!("{}", query);
 
         let client = Client::new();
         let mut res = try!(client.get(&query).send());
@@ -68,7 +69,8 @@ impl GSBClient {
                 "malware"   => statuses.push(Status::Malware),
                 "unwanted"  => statuses.push(Status::Unwanted),
                 ""          => (),
-                _   => unreachable!()
+                // Given a well formed response from GSB this should never happen
+                _   => panic!()
             };
         }
         Ok(statuses)
@@ -83,7 +85,7 @@ impl GSBClient {
                 vec![("client", self.client_name.as_ref()),
                     ("key", self.api_key.as_ref()),
                     ("appver", self.app_ver.as_ref()),
-                    ("pver", self.api_ver.as_ref()),
+                    ("pver", self.pver.as_ref()),
                     ("url", url.as_ref())];
 
         base.set_query_from_pairs(v.into_iter());
@@ -94,11 +96,12 @@ impl GSBClient {
     /// Perform a bulk lookup on an iterable of urls.
     /// Returns a Vector of Vectors containing Statuses.
     /// # Panics
-    /// Panics if more than 200 urls are passed in.
-    pub fn lookup_all<'a, I> (&self, urls: I) -> Vec<Vec<Status>>
+    /// Panics if more than 500 urls are passed in.
+    pub fn lookup_all<'a, I> (&self, urls: I) -> Result<Vec<Vec<Status>>, GSBError>
     where I: Iterator<Item=&'a str>
     {
         let url = self.build_post_url();
+
         let mut all_statuses = Vec::new();
 
         let message = {
@@ -110,32 +113,30 @@ impl GSBClient {
                 furls.push_str(url);
                 furls.push('\n');
             }
-            if size > 200 {
-                panic!("Can not lookup more than 200 urls");
+
+            // GSB API only accepts 500 or fewer urls
+            if size > 500 {
+                panic!("Can not lookup more than 500 urls");
             }
+
             all_statuses.reserve(size);
             let size = size.to_string();
             let mut message = String::with_capacity(furls.len() + size.len());
 
             message.push_str(&size);
+            message.push('\n');
             message.push_str(&furls);
+            message.pop();
             message
         };
 
         let client = Client::new();
+        let client = client.post(&url).body(&message);
+        let mut res = try!(client.send());
 
-        let res = client.post(&url)
-            .body(&message)
-            .send();
+        all_statuses = self.messages_from_response_post(&mut res);
 
-        match res {
-            Ok(mut res) => {
-                all_statuses = self.messages_from_response_post(&mut res);
-            },
-            Err(e)  => println!("Request failed with: {}", e)
-        };
-
-        all_statuses
+        Ok(all_statuses)
     }
 
     /// Takes a reponse from GSB and splits it into lines of Statuses
@@ -154,7 +155,9 @@ impl GSBClient {
             let mut statuses = Vec::with_capacity(status_line.len());
 
             statuses.extend(self.statuses_from_vec(&status_line));
-            all_statuses.push(statuses);
+            if !statuses.is_empty() {
+                all_statuses.push(statuses);
+            }
         }
 
         all_statuses
@@ -185,7 +188,7 @@ impl GSBClient {
                 vec![("client", self.client_name.as_ref()),
                     ("key", self.api_key.as_ref()),
                     ("appver", self.app_ver.as_ref()),
-                    ("pver", self.api_ver.as_ref())];
+                    ("pver", self.pver.as_ref())];
 
         base.set_query_from_pairs(v.into_iter());
 
