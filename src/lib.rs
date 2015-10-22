@@ -1,5 +1,4 @@
-// #![feature(custom_derive)]
-// #![allow(dead_code, unused_attributes)]
+#![deny(warnings)]
 extern crate url;
 extern crate hyper;
 
@@ -13,7 +12,7 @@ use std::io::prelude::*;
 /// Status represents each list a URL may be found in as well as a value,
 /// 'Ok', which is used as a placeholder when the URL is not found in any
 /// list. 'Ok' is only used in bulk queries.
-// #[derive(Display, Debug)]
+#[derive(Debug)]
 pub enum Status {
     Ok,
     Phishing,
@@ -22,6 +21,7 @@ pub enum Status {
 }
 
 /// A client for interacting with the Google Safe Browsing Lookup API
+#[derive(Debug)]
 pub struct GSBClient {
     api_key: String,
     client_name: String,
@@ -90,7 +90,6 @@ impl GSBClient {
         let url = self.build_post_url();
 
         let message = {
-
             let (furls, size) = {
                 let mut furls = String::new();
                 let mut size: usize = 0;

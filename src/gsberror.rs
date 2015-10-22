@@ -1,3 +1,4 @@
+#![deny(warnings)]
 extern crate hyper;
 
 use std::error;

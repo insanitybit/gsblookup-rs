@@ -1,16 +1,18 @@
 [![License](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/insanitybit/gsblookup-rs/blob/master/LICENSE) [![Build Status](https://travis-ci.org/insanitybit/gsblookup-rs.png)](https://travis-ci.org/insanitybit/gsblookup-rs)
 
 # gsblookup-rs
-Rust interface to Google Safe Browsing Lookup API
+Rust interface to [Google Safe Browsing Lookup API](https://developers.google.com/safe-browsing/lookup_guide)
 
 # Example
+
+Looking up a single URL.
 
 ```rust
   let key : String = "API KEY HERE".into();
   let url = Url::parse("http://exampleurl.org/").unwrap();
 
   let gsb = GSBClient::new(key);
-  let statuses = gsb.lookup(url);
+  let statuses = gsb.lookup(url).unwrap();
 
   if statuses.is_empty() {
     println!("Url not found in any of Google's lists");
