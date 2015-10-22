@@ -1,5 +1,4 @@
 #![feature(custom_derive)]
-#![deny(warnings)]
 // #![allow(dead_code, unused_attributes)]
 extern crate url;
 extern crate hyper;
