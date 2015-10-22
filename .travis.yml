@@ -7,9 +7,10 @@ sudo: false
 script:
   - cargo build --verbose --example query
   - cargo build --verbose
+  - cargo test
 after_success:
   - cargo doc
-  - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && bash deploy.sh
+  - bash deploy.sh
 env:
   global:
     secure: "fMYkIQoKBTLRuiXd+JGaQEEjtWv8N0dlTvu9OeNejkprEsLNTTQ1W9nzMbEUaQIVHS9KFLksJyWB/ZQWwf2Zi+fHo/zBYRUcffkFPQBmpgpf3/8irZkOHucd5Qtv0UiQ+gLgQPORKVOAeBSA7WU2x83CxJPwgQasvxnS+BhTbEh1GxaO7Vb25KxF+SSwvsdDXzFumLSoXmI3O097DtfLnhLLcG+Ilb7Kyn4wy57ockZnPf78ODEy1yB17yjcfZDOg5YHVMDe3EiDKUvFvytcf/X2yyrGP16oUXqke9mckqt1ja1Bh6FqCtJZdC5jRBrSptgqenxAuTLZbGmQkLqaVy6UrG5+qzBrDEtjk4zPlUCdTdiqFyXemzVyzc7rXZYUboPRT+UPkIxv7xmypNJOw1Ou/0rSXJvXl1P08QSX9ydGMH4YCzKozh+A+njtQfP7zPxXTjoX7+LV183ef94t0tn9dBYPr3DFO4v0dRicGk80i0IT365lEBZ0wzCJkSIwrqmjq+S3/VYxo4TQa6QGhMhMRqrYmfSDWVC42QAQGfgWXY9Ho6NkZScAkTdimXG4hZo0oZITLfn0xCUtUPlZMYBkSSncB5oJYVTpSKq43X8kSjeUTsdN7y/+4HPWl0+tdwkt/FTI+8XA7j0L+w44pp2AM8BYkb+4DiHMfZSa8Yo="
