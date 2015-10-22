@@ -19,10 +19,11 @@ Rust interface to Google Safe Browsing Lookup API
         match status {
             Status::Phishing    => println!("Phishing"),
             Status::Malware     => println!("Malware"),
-            Status::Unwanted    => println!("Unwanted")
+            Status::Unwanted    => println!("Unwanted"),
+            _                   => ()
         }
     }
   }
 ```
 
-See examples/ for more.
+See [examples/](https://github.com/insanitybit/gsblookup-rs/tree/master/examples) for more.
