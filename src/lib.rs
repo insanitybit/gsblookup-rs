@@ -35,7 +35,7 @@ impl GSBClient {
         GSBClient {
             api_key: key,
             client_name: "gsbrs".to_owned(),
-            app_ver: "0.0.1".to_owned(),
+            app_ver: "0.1.0".to_owned(),
             pver: "3.1".to_owned(),
         }
     }

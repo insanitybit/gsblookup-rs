@@ -5,8 +5,6 @@
 # gsblookup-rs
 Rust interface to Google Safe Browsing Lookup API
 
-[Documentation](https://insanitybit.github.io/gsblookup-rs/)
-
 # Example
 
 ```rust
