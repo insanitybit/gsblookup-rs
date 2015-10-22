@@ -24,10 +24,10 @@
 
     
 
-    <nav class="sidebar">
+    <section class="sidebar">
         
         <p class='location'><a href='../../index.html'>openssl</a>::<wbr><a href='../index.html'>crypto</a>::<wbr><a href='index.html'>memcmp</a></p><script>window.sidebarCurrent = {name: 'eq', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
-    </nav>
+    </section>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -45,13 +45,14 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-1105' class='srclink' href='../../../src/openssl/crypto/memcmp.rs.html#13-21' title='goto source code'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn eq(a: <a href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, b: <a href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></pre><div class='docblock'><p>Returns <code>true</code> iff <code>a</code> and <code>b</code> contain the same bytes.</p>
+        </span><a id='src-8859' class='srclink' href='../../../src/openssl/crypto/memcmp.rs.html#13-21' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn eq(a: <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a href='http://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>, b: <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a href='http://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></pre><div class='docblock'><p>Returns <code>true</code> iff <code>a</code> and <code>b</code> contain the same bytes.</p>
 
 <p>This operation takes an amount of time dependent on the length of the two
 arrays given, but is independent of the contents of a and b.</p>
 
-<h1 id='failure' class='section-header'><a href='#failure'>Failure</a></h1>
+<h1 id="failure" class='section-header'><a
+                           href="#failure">Failure</a></h1>
 <p>This function will panic the current task if <code>a</code> and <code>b</code> do not have the same
 length.</p>
 </div></section>
@@ -59,12 +60,10 @@ length.</p>
 
     <section class="footer"></section>
 
-    <aside id="help" class="hidden">
+    <div id="help" class="hidden">
         <div>
-            <h1 class="hidden">Help</h1>
-
             <div class="shortcuts">
-                <h2>Keyboard Shortcuts</h2>
+                <h1>Keyboard Shortcuts</h1>
 
                 <dl>
                     <dt>?</dt>
@@ -81,7 +80,7 @@ length.</p>
             </div>
 
             <div class="infos">
-                <h2>Search Tricks</h2>
+                <h1>Search Tricks</h1>
 
                 <p>
                     Prefix searches with a type followed by a colon (e.g.
@@ -91,8 +90,8 @@ length.</p>
                 <p>
                     Accepted types are: <code>fn</code>, <code>mod</code>,
                     <code>struct</code>, <code>enum</code>,
-                    <code>trait</code>, <code>type</code>, <code>macro</code>,
-                    and <code>const</code>.
+                    <code>trait</code>, <code>typedef</code> (or
+                    <code>tdef</code>).
                 </p>
 
                 <p>
@@ -101,7 +100,7 @@ length.</p>
                 </p>
             </div>
         </div>
-    </aside>
+    </div>
 
     
 
