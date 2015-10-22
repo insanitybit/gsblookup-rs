@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Status","Status represents each list a URL may be found in as well as a value, 'Ok', which is used as a placeholder when the URL is not found in any list. 'Ok' is only used in bulk queries."]],"mod":[["gsberror",""]],"struct":[["GSBClient","A client for interacting with the Google Safe Browsing Lookup API"]]});
