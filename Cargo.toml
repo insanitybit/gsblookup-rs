@@ -1,12 +1,12 @@
 [package]
 name = "gsbrs"
-version = "0.0.1"
+version = "0.1.0"
 authors = ["insanitybit <insanitybit@gmail.com>"]
 description = "Provides a client for Google Safe Browsing lookups"
 license = "MIT"
 keywords = ["Google", "SafeBrowsing", "gsb"]
-# documentation = "..."
-# homepage = "..."
+
+documentation = "https://insanitybit.github.io/gsblookup-rs/gsbrs/"
 repository = "https://github.com/insanitybit/gsblookup-rs"
 readme = "README.md"
 
