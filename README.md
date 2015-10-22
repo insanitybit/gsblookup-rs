@@ -5,6 +5,15 @@ Rust interface to [Google Safe Browsing Lookup API](https://developers.google.co
 
 [Documentation](https://insanitybit.github.io/gsblookup-rs/gsbrs/)
 
+# Usage
+
+Available on crates.io
+
+```toml
+[dependencies]
+gsbrs = "*"
+```
+
 # Example
 
 Looking up a single URL.
