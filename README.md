@@ -1,6 +1,4 @@
-[![License](http://img.shields.io/badge/license-MIT-blue.svg)]
-
-[![Build Status](https://travis-ci.org/insanitybit/gsblookup-rs.png)](https://travis-ci.org/insanitybit/gsblookup-rs)
+[![License](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/insanitybit/gsblookup-rs/blob/master/LICENSE) [![Build Status](https://travis-ci.org/insanitybit/gsblookup-rs.png)](https://travis-ci.org/insanitybit/gsblookup-rs)
 
 # gsblookup-rs
 Rust interface to Google Safe Browsing Lookup API
