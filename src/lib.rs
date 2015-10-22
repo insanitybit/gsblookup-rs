@@ -1,5 +1,5 @@
 #![feature(custom_derive)]
-#![allow(dead_code, unused_attributes)]
+// #![allow(dead_code, unused_attributes)]
 extern crate url;
 extern crate hyper;
 
@@ -13,7 +13,7 @@ use std::io::prelude::*;
 /// Status represents each list a URL may be found in as well as a value,
 /// 'Ok', which is used as a placeholder when the URL is not found in any
 /// list. 'Ok' is only used in bulk queries.
-#[derive(Display, Debug)]
+// #[derive(Display, Debug)]
 pub enum Status {
     Ok,
     Phishing,
@@ -34,9 +34,9 @@ impl GSBClient {
     pub fn new(key: String) -> GSBClient {
         GSBClient {
             api_key: key,
-            client_name: "gsbrs".to_string(),
-            app_ver: "0.0.1".to_string(),
-            pver: "3.1".to_string(),
+            client_name: "gsbrs".to_owned(),
+            app_ver: "0.0.1".to_owned(),
+            pver: "3.1".to_owned(),
         }
     }
 
@@ -61,7 +61,7 @@ impl GSBClient {
 
         let msg: Vec<&str> = msg.split(",").collect();
 
-        let statuses = self.statuses_from_vec(&msg);
+        let statuses = try!(self.statuses_from_vec(&msg));
         Ok(statuses)
     }
 
@@ -120,14 +120,14 @@ impl GSBClient {
         let client = Client::new();
         let client = client.post(&url).body(&message);
         let res = try!(client.send());
-
-        Ok(self.messages_from_response_post(res))
+        let msgs = try!(self.messages_from_response_post(res));
+        Ok(msgs)
     }
 
     /// Takes a reponse from GSB and splits it into lines of Statuses
     fn messages_from_response_post(&self,
                                    res: hyper::client::response::Response)
-                                   -> Vec<Vec<Status>> {
+                                   -> Result<Vec<Vec<Status>>, GSBError> {
         let msgs = {
             let mut res = res;
             let mut s = String::new();
@@ -140,17 +140,17 @@ impl GSBClient {
 
         for status_line in msgs {
             let status_line: Vec<&str> = status_line.split(",").collect();
-            let statuses = self.statuses_from_vec(&status_line);
+            let statuses = try!(self.statuses_from_vec(&status_line));
             if !statuses.is_empty() {
                 all_statuses.push(statuses);
             }
         }
 
-        all_statuses
+        Ok(all_statuses)
     }
 
     /// Builds a Vec<Status> from a slice of &str
-    fn statuses_from_vec(&self, strstatuses: &[&str]) -> Vec<Status> {
+    fn statuses_from_vec(&self, strstatuses: &[&str]) -> Result<Vec<Status>, GSBError> {
         let mut statuses = Vec::new();
         for status in strstatuses {
             let status = *status;
@@ -160,10 +160,10 @@ impl GSBClient {
                 "unwanted" => statuses.push(Status::Unwanted),
                 "ok" => statuses.push(Status::Ok),
                 "" => (),
-                _ => panic!(),
+                _ => return Err(GSBError::MalformedMessage),
             }
         }
-        statuses
+        Ok(statuses)
     }
 
     /// Builds a queryable string for POST requests

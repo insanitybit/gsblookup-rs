@@ -1,0 +1,10 @@
+language: rust
+script:
+- cargo build --verbose --example query
+- cargo build --verbose
+after_success:
+- cargo doc
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && bash deploy.sh
+env:
+  global:
+    secure: "IfINdes9kQ+aMj9DO8332WILeCCITi9WjSXc9Porm+nOa50/lNq+YUmu2lAcDexAX/O+72AuIp3iYA5VMwCPSBfcOst7v7KZkKEm1QCYe2aL5nG5v86pvZzC4earwKOuXapBDQToCmrswOfQ3EAywrMKW8EUbGkKq+y0u3xfw8JMVHNWxxcp7o/Ls8tsKSRcCBPIx03EGs9CM+gWj2saFJvbTj8DO9t+OwCOlxu/IQMBeh/Ug7Ejs5LUMiaa2AVJuu9U6hWPNoYokg6UQspBtJ3avOFJV2SP2Rl/dItIITIS73IG+6HN9qj6zjY/MCxrHtOmynvkwoG93qeJgXflBzk5Cy/EzP0SPnAOj+wuUfYk5VtQXybr0MzdjSseEQbU0vEMtLXodS9mEC45bb31Dusx1f0uH9LezNOnbcDc+gTdG1Q92W8biHSQjqyvIo1Z3bjIGjLF/NpHf+h9Opj81fqC/BOB0X/W1yt9yPlIWVjMCLzQmpOXXQ/5iiEjCtgwu6/YNpSqszb15B0ZSBS/IJWxnja2sc+21VwApuvOTgGBEgvLFl9yG46IbXa3yVIzga9TKj8V4tSy+SX/PKTUBt0rznZ//MWdRZlMMadxnggYIG5udEa6aDzcZfB4bpMD/3WpIv/CdAKyR1ENf8K+WTygk3uwMfd3TnCOIOOTLZ8="

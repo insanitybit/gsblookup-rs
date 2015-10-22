@@ -8,6 +8,7 @@ use hyper::Error;
 pub enum GSBError {
     Network(hyper::error::Error),
     TooManyUrls,
+    MalformedMessage,
 }
 
 impl fmt::Display for GSBError {
@@ -15,6 +16,9 @@ impl fmt::Display for GSBError {
         match *self {
             GSBError::Network(ref err) => write!(f, "Network error: {}", err),
             GSBError::TooManyUrls => write!(f, "GSB API requires < 500 urls"),
+            GSBError::MalformedMessage =>
+                write!(f,
+                       "There was an unexpected value in the GSB response, please file a bug!"),
         }
     }
 }
@@ -25,6 +29,8 @@ impl error::Error for GSBError {
         match *self {
             GSBError::Network(ref err) => err.description(),
             GSBError::TooManyUrls => "GSB API requires < 500 urls",
+            GSBError::MalformedMessage =>
+                "There was an unexpected value in the GSB response, please file a bug!",
         }
     }
 
@@ -32,6 +38,7 @@ impl error::Error for GSBError {
         match *self {
             GSBError::Network(ref err) => Some(err),
             GSBError::TooManyUrls => None,
+            GSBError::MalformedMessage => None,
         }
     }
 }
