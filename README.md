@@ -3,6 +3,8 @@
 # gsblookup-rs
 Rust interface to [Google Safe Browsing Lookup API](https://developers.google.com/safe-browsing/lookup_guide)
 
+[Documentation](https://insanitybit.github.io/gsblookup-rs/gsbrs/)
+
 # Example
 
 Looking up a single URL.
