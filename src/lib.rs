@@ -187,10 +187,26 @@ impl GSBClient {
 
 #[cfg(test)]
 mod tests {
-    // use super::*;
+    use super::*;
+    extern crate url;
+    use url::Url;
 
     #[test]
-    fn test_name() {
-        
+    fn test_build_post_url() {
+        let g = GSBClient::new("testkey".to_owned());
+
+        let s = "https://sb-ssl.google.\
+                 com/safebrowsing/api/lookup?client=gsbrs&key=testkey&appver=0.1.0&pver=3.1";
+        assert_eq!(g.build_post_url(), s.to_owned());
+    }
+
+    #[test]
+    fn test_build_get_url() {
+        let g = GSBClient::new("testkey".to_owned());
+        let u = Url::parse("https://google.com").unwrap();
+        let s = "https://sb-ssl.google.com/safebrowsing/api/lookup?\
+                client=gsbrs&key=testkey&appver=0.1.0&pver=3.1\
+                &url=https%3A%2F%2Fgoogle.com%2F";
+        assert_eq!(g.build_get_url(u), s.to_owned());
     }
 }
