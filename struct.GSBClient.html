@@ -24,10 +24,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         <p class='location'><a href='index.html'>gsbrs</a></p><script>window.sidebarCurrent = {name: 'GSBClient', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -45,31 +45,33 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-282' class='srclink' href='../src/gsbrs/lib.rs.html#25-30' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-54' class='srclink' href='../src/gsbrs/lib.rs.html#25-30' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct GSBClient {
     // some fields omitted
 }</pre><div class='docblock'><p>A client for interacting with the Google Safe Browsing Lookup API</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../gsbrs/struct.GSBClient.html' title='gsbrs::GSBClient'>GSBClient</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(key: <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>) -&gt; <a class='struct' href='../gsbrs/struct.GSBClient.html' title='gsbrs::GSBClient'>GSBClient</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../gsbrs/struct.GSBClient.html' title='gsbrs::GSBClient'>GSBClient</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(key: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>) -&gt; <a class='struct' href='../gsbrs/struct.GSBClient.html' title='gsbrs::GSBClient'>GSBClient</a></code></h4>
 <div class='docblock'><p>Creates a new GSBClient that will use &#39;key&#39; as the GSB API key</p>
-</div><h4 id='method.change_client_name' class='method'><code>fn <a href='#method.change_client_name' class='fnname'>change_client_name</a>(&amp;mut self, client_name: <a class='struct' href='http://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>)</code></h4>
+</div><h4 id='method.change_client_name' class='method'><code>fn <a href='#method.change_client_name' class='fnname'>change_client_name</a>(&amp;mut self, client_name: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/string/struct.String.html' title='collections::string::String'>String</a>)</code></h4>
 <div class='docblock'><p>Sets the GSBClient client_name to &#39;client_name&#39;
 GSBClient uses &#39;gsbrs&#39; as the client_name by default.</p>
-</div><h4 id='method.lookup' class='method'><code>fn <a href='#method.lookup' class='fnname'>lookup</a>(&amp;self, url: &amp;<a class='struct' href='../url/struct.Url.html' title='url::Url'>Url</a>) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../gsbrs/enum.Status.html' title='gsbrs::Status'>Status</a>&gt;, <a class='enum' href='../gsbrs/gsberror/enum.GSBError.html' title='gsbrs::gsberror::GSBError'>GSBError</a>&gt;</code></h4>
+</div><h4 id='method.lookup' class='method'><code>fn <a href='#method.lookup' class='fnname'>lookup</a>(&amp;self, url: &amp;<a class='struct' href='../url/struct.Url.html' title='url::Url'>Url</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../gsbrs/enum.Status.html' title='gsbrs::Status'>Status</a>&gt;, <a class='enum' href='../gsbrs/gsberror/enum.GSBError.html' title='gsbrs::gsberror::GSBError'>GSBError</a>&gt;</code></h4>
 <div class='docblock'><p>Queries GSB API with &#39;url&#39;, returns Vec of Status for &#39;url&#39;</p>
-</div><h4 id='method.lookup_all' class='method'><code>fn <a href='#method.lookup_all' class='fnname'>lookup_all</a>&lt;'a, I&gt;(&amp;self, urls: I) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../gsbrs/enum.Status.html' title='gsbrs::Status'>Status</a>&gt;&gt;, <a class='enum' href='../gsbrs/gsberror/enum.GSBError.html' title='gsbrs::gsberror::GSBError'>GSBError</a>&gt; <span class='where'>where I: <a class='trait' href='http://doc.rust-lang.org/nightly/core/iter/trait.Iterator.html' title='core::iter::Iterator'>Iterator</a>&lt;Item=&amp;'a <a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;</span></code></h4>
+</div><h4 id='method.lookup_all' class='method'><code>fn <a href='#method.lookup_all' class='fnname'>lookup_all</a>&lt;'a, I&gt;(&amp;self, urls: I) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../gsbrs/enum.Status.html' title='gsbrs::Status'>Status</a>&gt;&gt;, <a class='enum' href='../gsbrs/gsberror/enum.GSBError.html' title='gsbrs::gsberror::GSBError'>GSBError</a>&gt; <span class='where'>where I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/trait.Iterator.html' title='core::iter::Iterator'>Iterator</a>&lt;Item=&amp;'a <a href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>&gt;</span></code></h4>
 <div class='docblock'><p>Perform a bulk lookup on an iterable of urls.
 Returns a Vector of Vectors containing Statuses.
 Returns GSBError::TooManyUrls if &gt; 500 urls are pased in</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../gsbrs/struct.GSBClient.html' title='gsbrs::GSBClient'>GSBClient</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='http://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='http://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html' title='core::fmt::Debug'>Debug</a> for <a class='struct' href='../gsbrs/struct.GSBClient.html' title='gsbrs::GSBClient'>GSBClient</a></code></h3><div class='impl-items'><h4 id='method.fmt' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#method.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html' title='core::fmt::Formatter'>Formatter</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/core/fmt/type.Result.html' title='core::fmt::Result'>Result</a></code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
+    <aside id="help" class="hidden">
         <div>
+            <h1 class="hidden">Help</h1>
+
             <div class="shortcuts">
-                <h1>Keyboard Shortcuts</h1>
+                <h2>Keyboard Shortcuts</h2>
 
                 <dl>
                     <dt>?</dt>
@@ -86,7 +88,7 @@ Returns GSBError::TooManyUrls if &gt; 500 urls are pased in</p>
             </div>
 
             <div class="infos">
-                <h1>Search Tricks</h1>
+                <h2>Search Tricks</h2>
 
                 <p>
                     Prefix searches with a type followed by a colon (e.g.
@@ -96,8 +98,8 @@ Returns GSBError::TooManyUrls if &gt; 500 urls are pased in</p>
                 <p>
                     Accepted types are: <code>fn</code>, <code>mod</code>,
                     <code>struct</code>, <code>enum</code>,
-                    <code>trait</code>, <code>typedef</code> (or
-                    <code>tdef</code>).
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
                 </p>
 
                 <p>
@@ -106,7 +108,7 @@ Returns GSBError::TooManyUrls if &gt; 500 urls are pased in</p>
                 </p>
             </div>
         </div>
-    </div>
+    </aside>
 
     
 
