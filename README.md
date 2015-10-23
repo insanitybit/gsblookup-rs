@@ -11,6 +11,8 @@ Rust interface to [Google Safe Browsing Lookup API](https://developers.google.co
 
 Available on crates.io
 
+Add this to your Cargo.toml
+
 ```toml
 [dependencies]
 gsbrs = "*"
