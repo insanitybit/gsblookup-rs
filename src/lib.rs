@@ -35,7 +35,7 @@ impl GSBClient {
         GSBClient {
             api_key: key,
             client_name: "gsbrs".to_owned(),
-            app_ver: "0.1.0".to_owned(),
+            app_ver: env!("CARGO_PKG_VERSION").to_owned(),
             pver: "3.1".to_owned(),
         }
     }
@@ -195,8 +195,9 @@ mod tests {
     fn test_build_post_url() {
         let g = GSBClient::new("testkey".to_owned());
 
-        let s = "https://sb-ssl.google.\
-                 com/safebrowsing/api/lookup?client=gsbrs&key=testkey&appver=0.1.0&pver=3.1";
+        let s = format!("https://sb-ssl.google.\
+                 com/safebrowsing/api/lookup?client=gsbrs&key=testkey&appver={}&pver=3.1",
+                 env!("CARGO_PKG_VERSION"));
         assert_eq!(g.build_post_url(), s.to_owned());
     }
 
@@ -204,9 +205,9 @@ mod tests {
     fn test_build_get_url() {
         let g = GSBClient::new("testkey".to_owned());
         let u = Url::parse("https://google.com").unwrap();
-        let s = "https://sb-ssl.google.com/safebrowsing/api/lookup?\
-                client=gsbrs&key=testkey&appver=0.1.0&pver=3.1\
-                &url=https%3A%2F%2Fgoogle.com%2F";
+        let s = format!("https://sb-ssl.google.com/safebrowsing/api/lookup?\
+                client=gsbrs&key=testkey&appver={}&pver=3.1\
+                &url=https%3A%2F%2Fgoogle.com%2F", env!("CARGO_PKG_VERSION"));
         assert_eq!(g.build_get_url(u), s.to_owned());
     }
 }
