@@ -1,5 +1,4 @@
 #![deny(warnings)]
-// #![cfg_attr(all(test, feature = "nightly"), feature(plugin))]
 #[cfg(all(test))]
 extern crate quickcheck;
 
