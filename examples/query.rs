@@ -5,7 +5,7 @@ use url::Url;
 use gsbrs::{GSBClient, Status};
 
 fn main() {
-    let key: String = "AIzaSyCOZpLyGR3gMKqrb5Amwe9lGSsVKtr7V0w".into();
+    let key: String = "AIzaSyCOZpLyGR3gMKqrb5Amwe9lGSsVKtr7".into();
 
     let gsb = GSBClient::new(key);
 

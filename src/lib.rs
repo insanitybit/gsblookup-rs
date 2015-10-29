@@ -1,9 +1,11 @@
 #![deny(warnings)]
 #![cfg_attr(test, feature(plugin))]
 #![cfg_attr(test, plugin(quickcheck_macros))]
-extern crate url;
-extern crate hyper;
+#[cfg(test)]
 extern crate quickcheck;
+
+extern crate hyper;
+extern crate url;
 
 pub mod gsberror;
 
