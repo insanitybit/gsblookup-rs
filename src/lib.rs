@@ -1,7 +1,7 @@
 #![deny(warnings)]
-#![cfg_attr(all(test, feature = "nightly"), feature(plugin))]
-#![cfg_attr(all(test, feature = "nightly"), plugin(quickcheck_macros))]
-#[cfg(all(test, feature = "nightly"))] extern crate quickcheck;
+// #![cfg_attr(all(test, feature = "nightly"), feature(plugin))]
+#[cfg(all(test))]
+extern crate quickcheck;
 
 
 extern crate hyper;
@@ -216,13 +216,14 @@ mod tests {
     }
 }
 
-#[cfg(all(test, feature = "nightly"))]
+#[cfg(all(test))]
 mod quicktests {
     use super::*;
     extern crate url;
+
+    use quickcheck::quickcheck;
     use url::Url;
 
-    #[quickcheck]
     fn quickcheck_build_get_url(u: String) {
         let g = GSBClient::new("testkey".to_owned());
         if let Ok(url) = Url::parse(&u) {
@@ -230,28 +231,39 @@ mod quicktests {
         };
     }
 
-    #[quickcheck]
+
+
     fn quickcheck_client_new(key: String) {
         let _ = GSBClient::new(key);
     }
 
-    #[quickcheck]
     fn test_statuses_from_vec(strstatuses: Vec<String>) {
         let g = GSBClient::new("testkey".to_owned());
         let strstatuses : Vec<&str> = strstatuses.iter().map(|s| s.as_ref()).collect();
         let _ = g.statuses_from_vec(&strstatuses);
     }
 
-    #[quickcheck]
+
     fn quickcheck_messages_from_response_post(cursor: String) {
         let g = GSBClient::new("testkey".to_owned());
         let cursor = cursor.as_bytes();
         let _ = g.messages_from_response_post(cursor);
     }
 
-    #[quickcheck]
     fn quickcheck_set_name(name: String) {
         let mut g = GSBClient::new("testkey".to_owned());
         g.change_client_name(name);
     }
+
+    #[test]
+    fn test() {
+        quickcheck(quickcheck_set_name as fn(String));
+
+        quickcheck(quickcheck_messages_from_response_post as fn(String));
+        quickcheck(test_statuses_from_vec as fn(Vec<String>));
+
+        quickcheck(quickcheck_build_get_url as fn(String));
+        quickcheck(quickcheck_client_new as fn(String));
+    }
+
 }

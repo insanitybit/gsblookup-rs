@@ -15,11 +15,7 @@ hyper = "0.6"
 url = "0.2.*"
 
 [dev-dependencies]
-quickcheck = { version = "0.2", optional = true }
-quickcheck_macros = { version = "0.2", optional = true }
-
-[features]
-nightly = ["quickcheck", "quickcheck_macros"]
+quickcheck = "0.2"
 
 [profile.dev]
 opt-level = 0
