@@ -1,7 +1,8 @@
 #![deny(warnings)]
-#![cfg_attr(test, feature(plugin))]
-#![cfg_attr(test, plugin(quickcheck_macros))]
-#[cfg(test)]
+#![cfg_attr(all(test, feature = "nightly"), feature(plugin))]
+#![cfg_attr(all(test, feature = "nightly"), plugin(quickcheck_macros))]
+
+#[cfg(all(test, feature = "nightly"))]
 extern crate quickcheck;
 
 extern crate hyper;
@@ -190,9 +191,6 @@ impl GSBClient {
 
 #[cfg(test)]
 mod tests {
-
-    extern crate quickcheck;
-
     use super::*;
     extern crate url;
     use url::Url;
@@ -217,6 +215,15 @@ mod tests {
                 &url=https%3A%2F%2Fgoogle.com%2F", env!("CARGO_PKG_VERSION"));
         assert_eq!(g.build_get_url(u), s.to_owned());
     }
+}
+
+#[cfg(all(test, feature = "nightly"))]
+mod quicktests {
+    extern crate quickcheck;
+
+    use super::*;
+    extern crate url;
+    use url::Url;
 
     #[quickcheck]
     fn quickcheck_build_get_url(u: String) {

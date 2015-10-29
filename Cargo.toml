@@ -18,6 +18,10 @@ url = "0.2.*"
 quickcheck = "0.2"
 quickcheck_macros = "0.2"
 
+[features]
+
+nightly = []
+
 [profile.dev]
 opt-level = 0
 debug = true
