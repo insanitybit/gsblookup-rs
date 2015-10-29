@@ -19,7 +19,6 @@ quickcheck = "0.2"
 quickcheck_macros = "0.2"
 
 [features]
-
 nightly = []
 
 [profile.dev]
