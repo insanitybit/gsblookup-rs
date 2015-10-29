@@ -16,7 +16,7 @@ script:
   - |
       travis-cargo build &&
       travis-cargo test &&
-      travis-cargo test --only nightly -- --features nightly &&
+      travis-cargo --only nightly test -- --features nightly &&
       travis-cargo --only stable doc
 after_success: |
   - travis-cargo --only stable doc-upload
