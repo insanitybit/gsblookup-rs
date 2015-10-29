@@ -1,6 +1,8 @@
 #![deny(warnings)]
 #![cfg_attr(all(test, feature = "nightly"), feature(plugin))]
 #![cfg_attr(all(test, feature = "nightly"), plugin(quickcheck_macros))]
+#[cfg(all(test, feature = "nightly"))] extern crate quickcheck;
+
 
 extern crate hyper;
 extern crate url;
@@ -216,8 +218,6 @@ mod tests {
 
 #[cfg(all(test, feature = "nightly"))]
 mod quicktests {
-    extern crate quickcheck;
-
     use super::*;
     extern crate url;
     use url::Url;
