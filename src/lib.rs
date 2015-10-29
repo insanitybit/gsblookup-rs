@@ -1,6 +1,9 @@
 #![deny(warnings)]
+#![cfg_attr(test, feature(plugin))]
+#![cfg_attr(test, plugin(quickcheck_macros))]
 extern crate url;
 extern crate hyper;
+extern crate quickcheck;
 
 pub mod gsberror;
 
@@ -124,9 +127,7 @@ impl GSBClient {
     }
 
     /// Takes a reponse from GSB and splits it into lines of Statuses
-    fn messages_from_response_post(&self,
-                                   res: hyper::client::response::Response)
-                                   -> Result<Vec<Vec<Status>>, GSBError> {
+    fn messages_from_response_post<R: Read>(&self, res: R) -> Result<Vec<Vec<Status>>, GSBError> {
         let msgs = {
             let mut res = res;
             let mut s = String::new();
@@ -187,6 +188,9 @@ impl GSBClient {
 
 #[cfg(test)]
 mod tests {
+
+    extern crate quickcheck;
+
     use super::*;
     extern crate url;
     use url::Url;
@@ -201,6 +205,7 @@ mod tests {
         assert_eq!(g.build_post_url(), s.to_owned());
     }
 
+
     #[test]
     fn test_build_get_url() {
         let g = GSBClient::new("testkey".to_owned());
@@ -209,5 +214,38 @@ mod tests {
                 client=gsbrs&key=testkey&appver={}&pver=3.1\
                 &url=https%3A%2F%2Fgoogle.com%2F", env!("CARGO_PKG_VERSION"));
         assert_eq!(g.build_get_url(u), s.to_owned());
+    }
+
+    #[quickcheck]
+    fn quickcheck_build_get_url(u: String) {
+        let g = GSBClient::new("testkey".to_owned());
+        if let Ok(url) = Url::parse(&u) {
+            g.build_get_url(url);
+        };
+    }
+
+    #[quickcheck]
+    fn quickcheck_client_new(key: String) {
+        let _ = GSBClient::new(key);
+    }
+
+    #[quickcheck]
+    fn test_statuses_from_vec(strstatuses: Vec<String>) {
+        let g = GSBClient::new("testkey".to_owned());
+        let strstatuses : Vec<&str> = strstatuses.iter().map(|s| s.as_ref()).collect();
+        let _ = g.statuses_from_vec(&strstatuses);
+    }
+
+    #[quickcheck]
+    fn quickcheck_messages_from_response_post(cursor: String) {
+        let g = GSBClient::new("testkey".to_owned());
+        let cursor = cursor.as_bytes();
+        let _ = g.messages_from_response_post(cursor);
+    }
+
+    #[quickcheck]
+    fn quickcheck_set_name(name: String) {
+        let mut g = GSBClient::new("testkey".to_owned());
+        g.change_client_name(name);
     }
 }
