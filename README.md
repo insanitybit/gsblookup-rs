@@ -23,7 +23,7 @@ gsbrs = "*"
 Looking up a single URL.
 
 ```rust
-let key: String = "AIzaSyCOZpLyGR3gMKqrb5A9lGSsVKtr7".into();
+let key: String = "AIzaSyCOZpyGR3gMKqrb5A9lGSsVKtr7".into();
 
 let gsb = GSBClient::new(key);
 let statuses = gsb.lookup("https://google.com").unwrap();

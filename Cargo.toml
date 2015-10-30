@@ -1,6 +1,6 @@
 [package]
 name = "gsbrs"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["insanitybit <insanitybit@gmail.com>"]
 description = "Provides a client for Google Safe Browsing lookups"
 license = "MIT"
