@@ -13,6 +13,9 @@ use hyper::Client;
 use url::Url;
 use std::io::prelude::*;
 
+#[allow(non_upper_case_globals)]
+pub static url_limit: u32 = 500;
+
 /// Status represents each list a URL may be found in as well as a value,
 /// 'Ok', which is used as a placeholder when the URL is not found in any
 /// list. 'Ok' is only used in bulk queries.
@@ -105,7 +108,7 @@ impl GSBClient {
                 (furls, size)
             };
             // GSB API only accepts 500 or fewer urls
-            if size > 500 {
+            if size > url_limit as usize {
                 return Err(GSBError::TooManyUrls);
             }
 
