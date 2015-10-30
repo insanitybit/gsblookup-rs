@@ -51,7 +51,7 @@ impl GSBClient {
     }
 
     /// Queries GSB API with 'url', returns Vec of Status for 'url'
-    pub fn lookup(&self, url: &Url) -> Result<Vec<Status>, GSBError> {
+    pub fn lookup(&self, url: &str) -> Result<Vec<Status>, GSBError> {
         let query = self.build_get_url(url.clone());
 
         let client = Client::new();
@@ -70,15 +70,14 @@ impl GSBClient {
     }
 
     /// Build a queryable String with 'url'
-    fn build_get_url(&self, url: Url) -> String {
+    fn build_get_url(&self, url: &str) -> String {
         let mut base = Url::parse("https://sb-ssl.google.com/safebrowsing/api/lookup?").unwrap();
-        let url = format!("{}", url);
 
         let v: Vec<(&str, &str)> = vec![("client", self.client_name.as_ref()),
                                         ("key", self.api_key.as_ref()),
                                         ("appver", self.app_ver.as_ref()),
                                         ("pver", self.pver.as_ref()),
-                                        ("url", url.as_ref())];
+                                        ("url", url)];
 
         base.set_query_from_pairs(v.into_iter());
 
@@ -190,8 +189,6 @@ impl GSBClient {
 #[cfg(test)]
 mod tests {
     use super::*;
-    extern crate url;
-    use url::Url;
 
     #[test]
     fn test_build_post_url() {
@@ -207,27 +204,23 @@ mod tests {
     #[test]
     fn test_build_get_url() {
         let g = GSBClient::new("testkey".to_owned());
-        let u = Url::parse("https://google.com").unwrap();
+        let u = "https://google.com/".to_owned();
         let s = format!("https://sb-ssl.google.com/safebrowsing/api/lookup?\
                 client=gsbrs&key=testkey&appver={}&pver=3.1\
                 &url=https%3A%2F%2Fgoogle.com%2F", env!("CARGO_PKG_VERSION"));
-        assert_eq!(g.build_get_url(u), s.to_owned());
+        assert_eq!(g.build_get_url(&u), s.to_owned());
     }
 }
 
 #[cfg(all(test))]
 mod quicktests {
     use super::*;
-    extern crate url;
 
     use quickcheck::quickcheck;
-    use url::Url;
 
-    fn quickcheck_build_get_url(u: String) {
+    fn quickcheck_build_get_url(url: String) {
         let g = GSBClient::new("testkey".to_owned());
-        if let Ok(url) = Url::parse(&u) {
-            g.build_get_url(url);
-        };
+            g.build_get_url(&url);
     }
 
 

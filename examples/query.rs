@@ -1,17 +1,12 @@
 extern crate gsbrs;
-extern crate url;
 
-use url::Url;
 use gsbrs::{GSBClient, Status};
 
 fn main() {
     let key: String = "AIzaSyCOZpLyGR3gMKqrb5A9lGSsVKtr7".into();
 
     let gsb = GSBClient::new(key);
-
-    let url = Url::parse("http://exampleurl.org/").unwrap();
-
-    let statuses = gsb.lookup(&url).unwrap();
+    let statuses = gsb.lookup("https://google.com").unwrap();
 
     if statuses.is_empty() {
         println!("Ok");
