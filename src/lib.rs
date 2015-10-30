@@ -86,6 +86,8 @@ impl GSBClient {
         format!("{}", base)
     }
 
+    /// Takes an iterator of &str and returns a single string and the number of items
+    /// counted in the iterator. If there are > url_limit items, return GSBError::TooManyUrls
     fn url_list_from_iter<'a, I>(&self, urls: I) -> Result<(String, usize), GSBError>
         where I: Iterator<Item = &'a str>
     {
