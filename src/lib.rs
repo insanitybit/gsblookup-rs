@@ -57,11 +57,10 @@ impl GSBClient {
     pub fn lookup(&self, url: &str) -> Result<Vec<Status>, GSBError> {
         let query = self.build_get_url(url.clone());
 
-        let client = Client::new();
-        let mut res = try!(client.get(&query).send());
-
         let msg = {
             let mut s = String::new();
+            let client = Client::new();
+            let mut res = try!(client.get(&query).send());
             let _ = res.read_to_string(&mut s);
             s
         };
@@ -87,6 +86,29 @@ impl GSBClient {
         format!("{}", base)
     }
 
+    fn url_list_from_iter<'a, I>(&self, urls: I) -> Result<(String, usize), GSBError>
+        where I: Iterator<Item = &'a str>
+    {
+        let mut url_list = String::new();
+        let mut length: usize = 0;
+
+        for url in urls {
+            length = length + 1;
+            url_list.push_str(url);
+            url_list.push('\n');
+        }
+        url_list.pop();
+        let length = length;
+
+        // GSB API only accepts 500 or fewer urls
+        if length > url_limit as usize {
+            return Err(GSBError::TooManyUrls);
+        }
+
+        Ok((url_list, length))
+    }
+
+
     /// Perform a bulk lookup on an iterable of urls.
     /// Returns a Vector of Vectors containing Statuses.
     /// Returns GSBError::TooManyUrls if > 500 urls are pased in
@@ -96,29 +118,16 @@ impl GSBClient {
         let url = self.build_post_url();
 
         let message = {
-            let (furls, size) = {
-                let mut furls = String::new();
-                let mut size: usize = 0;
-
-                for url in urls {
-                    size = size + 1;
-                    furls.push_str(url);
-                    furls.push('\n');
-                }
-                (furls, size)
+            let (url_list, length) = match (&self).url_list_from_iter(urls) {
+                Ok((u,l))   => (u, l.to_string()),
+                Err(e)  => return Err(e)
             };
-            // GSB API only accepts 500 or fewer urls
-            if size > url_limit as usize {
-                return Err(GSBError::TooManyUrls);
-            }
+            // length of message is the length of url_li
+            let mut message = String::with_capacity(length.len() + url_list.len());
 
-            let size = size.to_string();
-            let mut message = String::with_capacity(furls.len() + size.len());
-
-            message.push_str(&size);
+            message.push_str(&length);
             message.push('\n');
-            message.push_str(&furls);
-            message.pop();
+            message.push_str(&url_list);
             message
         };
 
@@ -126,6 +135,7 @@ impl GSBClient {
         let client = client.post(&url).body(&message);
         let res = try!(client.send());
         let msgs = try!(self.messages_from_response_post(res));
+
         Ok(msgs)
     }
 
