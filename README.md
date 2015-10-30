@@ -23,24 +23,24 @@ gsbrs = "*"
 Looking up a single URL.
 
 ```rust
-  let key : String = "API KEY HERE".into();
-  let url = Url::parse("http://exampleurl.org/").unwrap();
+let key: String = "AIzaSyCOZpLyGR3gMKqrb5A9lGSsVKtr7".into();
 
-  let gsb = GSBClient::new(key);
-  let statuses = gsb.lookup(url).unwrap();
+let gsb = GSBClient::new(key);
+let statuses = gsb.lookup("https://google.com").unwrap();
 
-  if statuses.is_empty() {
-    println!("Url not found in any of Google's lists");
-  } else {
+if statuses.is_empty() {
+    println!("Ok");
+} else {
     for status in statuses {
         match status {
-            Status::Phishing    => println!("Phishing"),
-            Status::Malware     => println!("Malware"),
-            Status::Unwanted    => println!("Unwanted"),
-            _                   => ()
+            Status::Phishing => println!("Phishing"),
+            Status::Malware => println!("Malware"),
+            Status::Unwanted => println!("Unwanted"),
+            // lookup only ever returns the above 3 statuses
+            _ => unreachable!(),
         }
     }
-  }
+}
 ```
 
 See [examples/](https://github.com/insanitybit/gsblookup-rs/tree/master/examples) for more.
