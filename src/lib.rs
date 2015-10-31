@@ -10,10 +10,12 @@ pub mod gsberror;
 
 use gsberror::GSBError;
 use hyper::Client;
-use url::Url;
+use hyper::status::StatusCode;
 use std::io::prelude::*;
+use url::Url;
 
 #[allow(non_upper_case_globals)]
+/// Indicates the maximum number of urls Google can process at a time
 pub static url_limit: u32 = 500;
 
 /// Status represents each list a URL may be found in as well as a value,
@@ -25,6 +27,18 @@ pub enum Status {
     Phishing,
     Malware,
     Unwanted,
+}
+
+#[derive(Debug)]
+pub struct Response {
+    statuses: Vec<Status>,
+    response: StatusCode
+}
+
+#[derive(Debug)]
+pub struct BulkResponse {
+    status_list: Vec<Vec<Status>>,
+    response: StatusCode
 }
 
 /// A client for interacting with the Google Safe Browsing Lookup API
@@ -110,6 +124,14 @@ impl GSBClient {
         Ok((url_list, length))
     }
 
+    /// Returns GSBError::HTTPStatusCode if Response StatusCode is not 200
+    fn check_res(&self, res: &mut hyper::client::response::Response) -> Result<(), GSBError> {
+
+    if res.status != StatusCode::Ok {
+        return Err(GSBError::HTTPStatusCode(res.status))
+    }
+        Ok(())
+    }
 
     /// Perform a bulk lookup on an iterable of urls.
     /// Returns a Vector of Vectors containing Statuses.
@@ -135,7 +157,9 @@ impl GSBClient {
 
         let client = Client::new();
         let client = client.post(&url).body(&message);
-        let res = try!(client.send());
+        let mut res = try!(client.send());
+        try!((&self).check_res(&mut res));
+        let res = res;
         let msgs = try!(self.messages_from_response_post(res));
 
         Ok(msgs)
