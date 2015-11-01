@@ -3,7 +3,7 @@ extern crate gsbrs;
 use gsbrs::{GSBClient, Status};
 
 fn main() {
-    let key: String = "AIzaSyCOZpLyGR3gMKqrb5A9lGSsVKtr7".into();
+    let key: String = "API_KEY".into();
 
     let gsb = GSBClient::new(key);
     let statuses = gsb.lookup("https://google.com").unwrap();

@@ -63,6 +63,7 @@ impl GSBClient {
         let msg = {
             let mut s = String::new();
             let mut res = try!((&self).client.get(&query).send());
+            try!((&self).check_res(&mut res));
             let _ = res.read_to_string(&mut s);
             s
         };
@@ -115,9 +116,12 @@ impl GSBClient {
     /// Returns GSBError::HTTPStatusCode if Response StatusCode is not 200
     fn check_res(&self, res: &mut hyper::client::response::Response) -> Result<(), GSBError> {
 
-    if res.status != StatusCode::Ok {
-        return Err(GSBError::HTTPStatusCode(res.status))
-    }
+        if res.status != StatusCode::Ok {
+            if res.status != StatusCode::NoContent {
+                println!("{:#?}", res.status);
+                return Err(GSBError::HTTPStatusCode(res.status))
+            }
+        }
         Ok(())
     }
 
@@ -153,9 +157,8 @@ impl GSBClient {
     }
 
     /// Takes a reponse from GSB and splits it into lines of Statuses
-    fn messages_from_response_post<R: Read>(&self, res: R) -> Result<Vec<Vec<Status>>, GSBError> {
+    fn messages_from_response_post<R: Read>(&self, mut res: R) -> Result<Vec<Vec<Status>>, GSBError> {
         let msgs = {
-            let mut res = res;
             let mut s = String::new();
             let _ = res.read_to_string(&mut s);
             s
