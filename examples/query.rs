@@ -6,6 +6,8 @@ fn main() {
     let key: String = "API_KEY".into();
 
     let gsb = GSBClient::new(key);
+
+    // Perform single GET lookup
     let statuses = gsb.lookup("https://google.com").unwrap();
 
     if statuses.is_empty() {
@@ -22,6 +24,7 @@ fn main() {
         }
     }
 
+    // Perform bulk lookup via POST
     let urls = vec!["https://google.com/", "http://exampleurl.org/"];
 
     let status_lines = gsb.lookup_all(urls.into_iter()).unwrap();

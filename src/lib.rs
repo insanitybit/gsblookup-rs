@@ -1,10 +1,10 @@
 #![deny(warnings)]
-#[cfg(all(test))]
-extern crate quickcheck;
-
+// #![feature(test)]
 
 extern crate hyper;
 extern crate url;
+#[cfg(all(test))]
+extern crate quickcheck;
 
 pub mod gsberror;
 
@@ -21,7 +21,7 @@ pub static url_limit: u32 = 500;
 /// Status represents each list a URL may be found in as well as a value,
 /// 'Ok', which is used as a placeholder when the URL is not found in any
 /// list. 'Ok' is only used in bulk queries.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Status {
     Ok,
     Phishing,
@@ -118,7 +118,6 @@ impl GSBClient {
 
         if res.status != StatusCode::Ok {
             if res.status != StatusCode::NoContent {
-                println!("{:#?}", res.status);
                 return Err(GSBError::HTTPStatusCode(res.status))
             }
         }
@@ -288,3 +287,58 @@ mod quicktests {
     }
 
 }
+//
+// #[cfg(test)]
+// mod bench {
+//     use super::*;
+//     extern crate test;
+//     use self::test::Bencher;
+//
+//     #[bench]
+//     fn bench_build_get_url(b: &mut Bencher) {
+//         let gsb = GSBClient::new("test".to_owned());
+//         b.iter(|| {
+//             gsb.build_get_url("https://google.com/");
+//         });
+//     }
+//
+//     #[bench]
+//     fn bench_build_post_url(b: &mut Bencher) {
+//         let gsb = GSBClient::new("test".to_owned());
+//         b.iter(|| {
+//             gsb.build_post_url();
+//         });
+//     }
+//
+//     #[bench]
+//     fn bench_lookup(b: &mut Bencher) {
+//         let count = test::black_box(1000);
+//         let mut bstatuses = Vec::with_capacity(count );
+//         for _ in 0..count {
+//             bstatuses.push(test::black_box(Status::Phishing));
+//         }
+//
+//         b.iter(|| {
+//             let key: String = "AIzaSyCOZpyGR3gMKqrb5A9lGSsVKtr7".into();
+//             let gsb = GSBClient::new(key);
+//             let statuses = match gsb.lookup("https://google.com") {
+//                 _  => bstatuses.clone()
+//             };
+//
+//             if statuses.is_empty() {
+//                 println!("Ok");
+//             } else {
+//                 for status in statuses {
+//                     match status {
+//                         Status::Phishing => test::black_box(()),
+//                         Status::Malware => test::black_box(()),
+//                         Status::Unwanted => test::black_box(()),
+//                         // lookup only ever returns the above 3 statuses
+//                         _ => unreachable!(),
+//                     }
+//                 }
+//             }
+//         });
+//     }
+//
+// }
