@@ -29,25 +29,13 @@ pub enum Status {
     Unwanted,
 }
 
-#[derive(Debug)]
-pub struct Response {
-    statuses: Vec<Status>,
-    response: StatusCode
-}
-
-#[derive(Debug)]
-pub struct BulkResponse {
-    status_list: Vec<Vec<Status>>,
-    response: StatusCode
-}
-
 /// A client for interacting with the Google Safe Browsing Lookup API
-#[derive(Debug)]
 pub struct GSBClient {
     api_key: String,
     client_name: String,
     app_ver: String,
     pver: String,
+    client: hyper::client::Client
 }
 
 impl GSBClient {
@@ -58,6 +46,7 @@ impl GSBClient {
             client_name: "gsbrs".to_owned(),
             app_ver: env!("CARGO_PKG_VERSION").to_owned(),
             pver: "3.1".to_owned(),
+            client: Client::new()
         }
     }
 
@@ -73,8 +62,7 @@ impl GSBClient {
 
         let msg = {
             let mut s = String::new();
-            let client = Client::new();
-            let mut res = try!(client.get(&query).send());
+            let mut res = try!((&self).client.get(&query).send());
             let _ = res.read_to_string(&mut s);
             s
         };
@@ -155,9 +143,8 @@ impl GSBClient {
             message
         };
 
-        let client = Client::new();
-        let client = client.post(&url).body(&message);
-        let mut res = try!(client.send());
+        let post = (&self).client.post(&url).body(&message);
+        let mut res = try!(post.send());
         try!((&self).check_res(&mut res));
         let res = res;
         let msgs = try!(self.messages_from_response_post(res));
