@@ -64,7 +64,7 @@ impl GSBClient {
             let mut s = String::new();
             let mut res = try!((&self).client.get(&query).send());
             try!((&self).check_res(&mut res));
-            let _ = res.read_to_string(&mut s);
+            try!(res.read_to_string(&mut s));
             s
         };
 
@@ -159,7 +159,7 @@ impl GSBClient {
     fn messages_from_response_post<R: Read>(&self, mut res: R) -> Result<Vec<Vec<Status>>, GSBError> {
         let msgs = {
             let mut s = String::new();
-            let _ = res.read_to_string(&mut s);
+            try!(res.read_to_string(&mut s));
             s
         };
 
