@@ -13,10 +13,8 @@ pub enum GSBError {
     TooManyUrls,
     MalformedMessage(String),
     HTTPStatusCode(hyper::status::StatusCode),
-    IOError(ioError)
+    IOError(ioError),
 }
-
-
 
 impl fmt::Display for GSBError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -26,9 +24,10 @@ impl fmt::Display for GSBError {
             GSBError::MalformedMessage(ref string) =>
                 write!(f,
                        "There was an unexpected value in the GSB response, please file a bug!
-                       String found before error: {}", string),
-            GSBError::HTTPStatusCode(sc)   =>
-                write!(f, "Expected 200 Status Code, found: {}", sc),
+                       \
+                        String found before error: {}",
+                       string),
+            GSBError::HTTPStatusCode(sc) => write!(f, "Expected 200 Status Code, found: {}", sc),
             GSBError::IOError(ref err) => write!(f, "IO error: {}", err),
         }
     }
@@ -52,7 +51,7 @@ impl error::Error for GSBError {
             GSBError::Network(ref err) => Some(err),
             GSBError::TooManyUrls => None,
             GSBError::MalformedMessage(_) => None,
-            GSBError::HTTPStatusCode(_)  => None,
+            GSBError::HTTPStatusCode(_) => None,
             GSBError::IOError(ref err) => Some(err),
         }
     }

@@ -35,7 +35,7 @@ pub struct GSBClient {
     client_name: String,
     app_ver: String,
     pver: String,
-    client: hyper::client::Client
+    client: hyper::client::Client,
 }
 
 impl GSBClient {
@@ -46,7 +46,7 @@ impl GSBClient {
             client_name: "gsbrs".to_owned(),
             app_ver: env!("CARGO_PKG_VERSION").to_owned(),
             pver: "3.1".to_owned(),
-            client: Client::new()
+            client: Client::new(),
         }
     }
 
@@ -118,7 +118,7 @@ impl GSBClient {
 
         if res.status != StatusCode::Ok {
             if res.status != StatusCode::NoContent {
-                return Err(GSBError::HTTPStatusCode(res.status))
+                return Err(GSBError::HTTPStatusCode(res.status));
             }
         }
         Ok(())
@@ -134,8 +134,8 @@ impl GSBClient {
 
         let message = {
             let (url_list, length) = match (&self).url_list_from_iter(urls) {
-                Ok((u,l))   => (u, l.to_string()),
-                Err(e)  => return Err(e)
+                Ok((u, l)) => (u, l.to_string()),
+                Err(e) => return Err(e),
             };
             // length of message is the length of url_li
             let mut message = String::with_capacity(length.len() + url_list.len());
@@ -156,7 +156,9 @@ impl GSBClient {
     }
 
     /// Takes a reponse from GSB and splits it into lines of Statuses
-    fn messages_from_response_post<R: Read>(&self, mut res: R) -> Result<Vec<Vec<Status>>, GSBError> {
+    fn messages_from_response_post<R: Read>(&self,
+                                            mut res: R)
+                                            -> Result<Vec<Vec<Status>>, GSBError> {
         let msgs = {
             let mut s = String::new();
             try!(res.read_to_string(&mut s));
@@ -223,8 +225,8 @@ mod tests {
         let g = GSBClient::new("testkey".to_owned());
 
         let s = format!("https://sb-ssl.google.\
-                 com/safebrowsing/api/lookup?client=gsbrs&key=testkey&appver={}&pver=3.1",
-                 env!("CARGO_PKG_VERSION"));
+                         com/safebrowsing/api/lookup?client=gsbrs&key=testkey&appver={}&pver=3.1",
+                        env!("CARGO_PKG_VERSION"));
         assert_eq!(g.build_post_url(), s.to_owned());
     }
 
@@ -233,9 +235,10 @@ mod tests {
     fn test_build_get_url() {
         let g = GSBClient::new("testkey".to_owned());
         let u = "https://google.com/".to_owned();
-        let s = format!("https://sb-ssl.google.com/safebrowsing/api/lookup?\
-                client=gsbrs&key=testkey&appver={}&pver=3.1\
-                &url=https%3A%2F%2Fgoogle.com%2F", env!("CARGO_PKG_VERSION"));
+        let s = format!("https://sb-ssl.google.\
+                         com/safebrowsing/api/lookup?client=gsbrs&key=testkey&appver={}&pver=3.\
+                         1&url=https%3A%2F%2Fgoogle.com%2F",
+                        env!("CARGO_PKG_VERSION"));
         assert_eq!(g.build_get_url(&u), s.to_owned());
     }
 
@@ -243,11 +246,12 @@ mod tests {
     fn test_statuses_from_vec() {
         let g = GSBClient::new("testkey".to_owned());
         let statuses = vec!["phishing", "malware", "unwanted", "ok"];
-        let statuses= g.statuses_from_vec(&statuses).ok().expect("");
-        assert_eq!(vec![Status::Phishing, Status::Malware, Status::Unwanted, Status::Ok], statuses);
+        let statuses = g.statuses_from_vec(&statuses).ok().expect("");
+        assert_eq!(vec![Status::Phishing, Status::Malware, Status::Unwanted, Status::Ok],
+                   statuses);
 
         let statuses = vec!["", "", "", ""];
-        let statuses= g.statuses_from_vec(&statuses).ok().expect("");
+        let statuses = g.statuses_from_vec(&statuses).ok().expect("");
         assert!(statuses.is_empty());
 
         let statuses = vec!["malformed"];
@@ -255,8 +259,8 @@ mod tests {
         match statuses {
             gsberror::GSBError::MalformedMessage(msg) => {
                 assert_eq!(msg, "malformed");
-            },
-            _  =>  panic!()
+            }
+            _ => panic!(),
         }
 
 
@@ -271,7 +275,7 @@ mod quicktests {
 
     fn quickcheck_build_get_url(url: String) {
         let g = GSBClient::new("testkey".to_owned());
-            g.build_get_url(&url);
+        g.build_get_url(&url);
     }
 
 
@@ -282,7 +286,7 @@ mod quicktests {
 
     fn test_statuses_from_vec(strstatuses: Vec<String>) {
         let g = GSBClient::new("testkey".to_owned());
-        let strstatuses : Vec<&str> = strstatuses.iter().map(|s| s.as_ref()).collect();
+        let strstatuses: Vec<&str> = strstatuses.iter().map(|s| s.as_ref()).collect();
         let _ = g.statuses_from_vec(&strstatuses);
     }
 

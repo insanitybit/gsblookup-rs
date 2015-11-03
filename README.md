@@ -37,6 +37,7 @@ if statuses.is_empty() {
             Status::Malware => println!("Malware"),
             Status::Unwanted => println!("Unwanted"),
             // lookup only ever returns the above 3 statuses
+            // lookup_all can return Status::Ok as well
             _ => unreachable!(),
         }
     }
