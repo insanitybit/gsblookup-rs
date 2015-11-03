@@ -15,7 +15,7 @@ Add this to your Cargo.toml
 
 ```toml
 [dependencies]
-gsbrs = "*"
+gsbrs = "0.5.0"
 ```
 
 # Example
