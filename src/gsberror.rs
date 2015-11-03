@@ -11,7 +11,7 @@ use std::io::Error as ioError;
 pub enum GSBError {
     Network(hyper::error::Error),
     TooManyUrls,
-    MalformedMessage,
+    MalformedMessage(String),
     HTTPStatusCode(hyper::status::StatusCode),
     IOError(ioError)
 }
@@ -23,9 +23,10 @@ impl fmt::Display for GSBError {
         match *self {
             GSBError::Network(ref err) => write!(f, "Network error: {}", err),
             GSBError::TooManyUrls => write!(f, "GSB API requires < 500 urls"),
-            GSBError::MalformedMessage =>
+            GSBError::MalformedMessage(ref string) =>
                 write!(f,
-                       "There was an unexpected value in the GSB response, please file a bug!"),
+                       "There was an unexpected value in the GSB response, please file a bug!
+                       String found before error: {}", string),
             GSBError::HTTPStatusCode(sc)   =>
                 write!(f, "Expected 200 Status Code, found: {}", sc),
             GSBError::IOError(ref err) => write!(f, "IO error: {}", err),
@@ -39,7 +40,7 @@ impl error::Error for GSBError {
         match *self {
             GSBError::Network(ref err) => err.description(),
             GSBError::TooManyUrls => "GSB API requires < 500 urls",
-            GSBError::MalformedMessage =>
+            GSBError::MalformedMessage(_) =>
                 "There was an unexpected value in the GSB response, please file a bug!",
             GSBError::HTTPStatusCode(_) => "Expected HTTP StatusCode 200",
             GSBError::IOError(ref err) => err.description(),
@@ -50,7 +51,7 @@ impl error::Error for GSBError {
         match *self {
             GSBError::Network(ref err) => Some(err),
             GSBError::TooManyUrls => None,
-            GSBError::MalformedMessage => None,
+            GSBError::MalformedMessage(_) => None,
             GSBError::HTTPStatusCode(_)  => None,
             GSBError::IOError(ref err) => Some(err),
         }

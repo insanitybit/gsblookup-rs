@@ -21,7 +21,7 @@ pub static url_limit: u32 = 500;
 /// Status represents each list a URL may be found in as well as a value,
 /// 'Ok', which is used as a placeholder when the URL is not found in any
 /// list. 'Ok' is only used in bulk queries.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Status {
     Ok,
     Phishing,
@@ -188,7 +188,7 @@ impl GSBClient {
                 "unwanted" => statuses.push(Status::Unwanted),
                 "ok" => statuses.push(Status::Ok),
                 "" => (),
-                _ => return Err(GSBError::MalformedMessage),
+                _ => return Err(GSBError::MalformedMessage(status.to_owned())),
             }
         }
         Ok(statuses)
@@ -237,6 +237,29 @@ mod tests {
                 client=gsbrs&key=testkey&appver={}&pver=3.1\
                 &url=https%3A%2F%2Fgoogle.com%2F", env!("CARGO_PKG_VERSION"));
         assert_eq!(g.build_get_url(&u), s.to_owned());
+    }
+
+    #[test]
+    fn test_statuses_from_vec() {
+        let g = GSBClient::new("testkey".to_owned());
+        let statuses = vec!["phishing", "malware", "unwanted", "ok"];
+        let statuses= g.statuses_from_vec(&statuses).ok().expect("");
+        assert_eq!(vec![Status::Phishing, Status::Malware, Status::Unwanted, Status::Ok], statuses);
+
+        let statuses = vec!["", "", "", ""];
+        let statuses= g.statuses_from_vec(&statuses).ok().expect("");
+        assert!(statuses.is_empty());
+
+        let statuses = vec!["malformed"];
+        let statuses = g.statuses_from_vec(&statuses).unwrap_err();
+        match statuses {
+            gsberror::GSBError::MalformedMessage(msg) => {
+                assert_eq!(msg, "malformed");
+            },
+            _  =>  panic!()
+        }
+
+
     }
 }
 
