@@ -19,8 +19,7 @@ use url::Url;
 pub static url_limit: u32 = 500;
 
 /// Status represents each list a URL may be found in as well as a value,
-/// 'Ok', which is used as a placeholder when the URL is not found in any
-/// list. 'Ok' is only used in bulk queries.
+/// The lookup_all API will return 'Ok' when the url is not found in any list, to maintain ordering.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Status {
     Ok,
@@ -30,20 +29,32 @@ pub enum Status {
 }
 
 /// A client for interacting with the Google Safe Browsing Lookup API
-pub struct GSBClient {
+pub struct GSBClient<'b> {
     api_key: String,
-    client_name: String,
+    client_name: &'b str,
     app_ver: String,
     pver: String,
     client: hyper::client::Client,
 }
 
-impl GSBClient {
+impl<'b> GSBClient<'b> {
     /// Creates a new GSBClient that will use 'key' as the GSB API key
-    pub fn new(key: String) -> GSBClient {
+    ///
+    ///
+    /// # Arguments
+    ///
+    /// * `key` - A String that represents the API key for Google Safe Browsing Lookup
+    ///
+    /// # Example
+    /// ```
+    /// use gsbrs::GSBClient;
+    /// let key : String = "example_api_key".into();
+    /// let gsb = GSBClient::new(key);
+    /// ```
+    pub fn new(key: String) -> GSBClient<'b> {
         GSBClient {
             api_key: key,
-            client_name: "gsbrs".to_owned(),
+            client_name: "gsbrs",
             app_ver: env!("CARGO_PKG_VERSION").to_owned(),
             pver: "3.1".to_owned(),
             client: Client::new(),
@@ -52,13 +63,40 @@ impl GSBClient {
 
     /// Sets the GSBClient client_name to 'client_name'
     /// GSBClient uses 'gsbrs' as the client_name by default.
-    pub fn change_client_name(&mut self, client_name: String) {
+    ///
+    /// # Arguments
+    ///
+    /// * `client_name` - A string slice that holds the name of the org/person using the client
+    ///
+    /// # Example
+    /// ```
+    /// let key : String = "example_api_key".into();
+    /// let mut gsb = gsbrs::GSBClient::new(key);
+    ///
+    /// gsb.change_client_name("new_name");
+    /// ```
+    pub fn change_client_name(&mut self, client_name: &'b str) {
         self.client_name = client_name;
     }
 
     /// Queries GSB API with 'url', returns Vec of Status for 'url'
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - A string slice that holds the url to be queried
+    ///
+    /// # Example
+    /// ```norun
+    /// let key : String = "example_api_key".into();
+    /// let gsb = gsbrs::GSBClient::new(key);
+    ///
+    /// let url = "https://google.com/";
+    /// if let Ok(statuses) = gsb.lookup(url) {
+    ///     assert_eq!(statuses[0], Status::Ok)
+    /// };
+    /// ```
     pub fn lookup(&self, url: &str) -> Result<Vec<Status>, GSBError> {
-        let query = self.build_get_url(url.clone());
+        let query = self.build_get_url(url);
 
         let msg = {
             let mut s = String::new();
@@ -127,6 +165,19 @@ impl GSBClient {
     /// Perform a bulk lookup on an iterable of urls.
     /// Returns a Vector of Vectors containing Statuses.
     /// Returns GSBError::TooManyUrls if > 500 urls are pased in
+    ///
+    /// # Arguments
+    ///
+    /// * `urls` - An iterable of string slices representing URLs to query
+    ///
+    /// # Example
+    /// ```norun
+    /// let key : String = "example_api_key".into();
+    /// let gsb = GSBClient::new(key);
+    ///
+    /// let urls = vec!["https://google.com/", "https://example.com"];
+    /// gsb.lookup_all(urls.iter());
+    /// ```
     pub fn lookup_all<'a, I>(&self, urls: I) -> Result<Vec<Vec<Status>>, GSBError>
         where I: Iterator<Item = &'a str>
     {
@@ -299,7 +350,7 @@ mod quicktests {
 
     fn quickcheck_set_name(name: String) {
         let mut g = GSBClient::new("testkey".to_owned());
-        g.change_client_name(name);
+        g.change_client_name(&name);
     }
 
     #[test]
