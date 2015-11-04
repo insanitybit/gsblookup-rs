@@ -7,12 +7,20 @@ use hyper::Error;
 use hyper::status::StatusCode;
 use std::io::Error as ioError;
 
+
 #[derive(Debug)]
+///
 pub enum GSBError {
+    /// Represents Network errors, including access violations to the GSBL PI
     Network(hyper::error::Error),
+    /// For when greater than gsbrs::url_limit urls are queried
     TooManyUrls,
+    /// Signifies an error occured when converting the Response message into
+    /// Statuses. Contains the String that it failed on.
     MalformedMessage(String),
+    /// Represents a StatusCode indicating an error occurred when querying the GSBL API
     HTTPStatusCode(hyper::status::StatusCode),
+    /// Wraps a std::io::Error
     IOError(ioError),
 }
 

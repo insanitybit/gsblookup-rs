@@ -1,11 +1,15 @@
-#![deny(warnings)]
-// #![feature(test)]
+//! # gsbrs
+//!
+//! gsbrs provides a GSBClient struct that can be used to query the
+//! [Google Safe Browsing Lookup API](https://developers.google.com/safe-browsing/lookup_guide)
+#![deny(warnings,missing_docs)]
 
 extern crate hyper;
 extern crate url;
 #[cfg(all(test))]
 extern crate quickcheck;
 
+/// GSBError type for wrapping incorrect/ invalid behaviors
 pub mod gsberror;
 
 use gsberror::GSBError;
@@ -22,9 +26,13 @@ pub static url_limit: u32 = 500;
 /// The lookup_all API will return 'Ok' when the url is not found in any list, to maintain ordering.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Status {
+    /// URL was not found in bulk lookup
     Ok,
+    /// Url was found in Phishing list
     Phishing,
+    /// Url was found in Malware list
     Malware,
+    /// Url was found in Unwanted list
     Unwanted,
 }
 
@@ -75,6 +83,7 @@ impl<'b> GSBClient<'b> {
     ///
     /// gsb.change_client_name("new_name");
     /// ```
+    ///
     pub fn change_client_name(&mut self, client_name: &'b str) {
         self.client_name = client_name;
     }

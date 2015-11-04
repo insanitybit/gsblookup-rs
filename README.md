@@ -45,3 +45,5 @@ if statuses.is_empty() {
 ```
 
 See [examples/](https://github.com/insanitybit/gsblookup-rs/tree/master/examples) for more.
+
+This library does not use any 'unsafe' blocks.
