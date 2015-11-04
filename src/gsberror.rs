@@ -9,7 +9,7 @@ use std::io::Error as ioError;
 
 
 #[derive(Debug)]
-///
+/// Represents potential errors that may occur when performing lookups
 pub enum GSBError {
     /// Represents Network errors, including access violations to the GSBL PI
     Network(hyper::error::Error),
