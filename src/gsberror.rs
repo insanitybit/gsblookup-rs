@@ -3,8 +3,6 @@ extern crate hyper;
 
 use std::error;
 use std::fmt;
-use hyper::Error;
-use hyper::status::StatusCode;
 use std::io::Error as ioError;
 
 
@@ -29,12 +27,13 @@ impl fmt::Display for GSBError {
         match *self {
             GSBError::Network(ref err) => write!(f, "Network error: {}", err),
             GSBError::TooManyUrls => write!(f, "GSB API requires < 500 urls"),
-            GSBError::MalformedMessage(ref string) =>
+            GSBError::MalformedMessage(ref string) => {
                 write!(f,
                        "There was an unexpected value in the GSB response, please file a bug!
                        \
                         String found before error: {}",
-                       string),
+                       string)
+            }
             GSBError::HTTPStatusCode(sc) => write!(f, "Expected 200 Status Code, found: {}", sc),
             GSBError::IOError(ref err) => write!(f, "IO error: {}", err),
         }
@@ -42,13 +41,13 @@ impl fmt::Display for GSBError {
 }
 
 impl error::Error for GSBError {
-
     fn description(&self) -> &str {
         match *self {
             GSBError::Network(ref err) => err.description(),
             GSBError::TooManyUrls => "GSB API requires < 500 urls",
-            GSBError::MalformedMessage(_) =>
-                "There was an unexpected value in the GSB response, please file a bug!",
+            GSBError::MalformedMessage(_) => {
+                "There was an unexpected value in the GSB response, please file a bug!"
+            }
             GSBError::HTTPStatusCode(_) => "Expected HTTP StatusCode 200",
             GSBError::IOError(ref err) => err.description(),
         }
