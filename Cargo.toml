@@ -3,7 +3,7 @@ name = "gsbrs"
 version = "0.5.0"
 authors = ["insanitybit <insanitybit@gmail.com>"]
 description = "Provides a client for the Google Safe Browsing Lookup API"
-license = "MIT"
+license = "MIT OR Apache-2.0"
 keywords = ["Google", "SafeBrowsing", "gsb"]
 
 documentation = "https://insanitybit.github.io/gsblookup-rs/gsbrs/"
