@@ -88,6 +88,11 @@ impl<'b> GSBClient<'b> {
         self.client_name = client_name;
     }
 
+
+    /// Returns a mutable reference to the hyper::Client used for connections    
+    pub fn get_client_mut(&mut self) -> &mut hyper::Client {
+        &mut self.client
+    }
     /// Queries GSB API with 'url', returns Vec of Status for 'url'
     ///
     /// # Arguments
